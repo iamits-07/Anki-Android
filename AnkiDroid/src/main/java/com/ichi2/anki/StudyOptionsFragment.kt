@@ -607,14 +607,16 @@ class StudyOptionsFragment :
             }
 
             // Set new/learn/review card counts
-            newCountText.text = result.newCardsToday.toString()
-            learningCountText.text = result.lrnCardsToday.toString()
-            reviewCountText.text = result.revCardsToday.toString()
+            updateTextViewWithCount(newCountText, result.newCardsToday)
+            updateTextViewWithCount(learningCountText, result.lrnCardsToday)
+            updateTextViewWithCount(reviewCountText, result.revCardsToday)
+
             // set bury numbers
             buryInfoLabel.isVisible =
                 result.buriedNew > 0 ||
                 result.buriedLearning > 0 ||
                 result.buriedReview > 0
+            newBuryText.isVisible = result.buriedNew > 0
             if (result.buriedNew > 0) {
                 newBuryText.text =
                     requireContext().resources.getQuantityString(
@@ -622,10 +624,9 @@ class StudyOptionsFragment :
                         result.buriedNew,
                         result.buriedNew,
                     )
-                newBuryText.isVisible = true
-            } else {
-                newBuryText.isVisible = false
             }
+
+            learningBuryText.isVisible = result.buriedLearning > 0
             if (result.buriedLearning > 0) {
                 learningBuryText.text =
                     requireContext().resources.getQuantityString(
@@ -633,10 +634,9 @@ class StudyOptionsFragment :
                         result.buriedLearning,
                         result.buriedLearning,
                     )
-                learningBuryText.isVisible = true
-            } else {
-                learningBuryText.isVisible = false
             }
+
+            reviewBuryText.isVisible = result.buriedReview > 0
             if (result.buriedReview > 0) {
                 reviewBuryText.text =
                     requireContext().resources.getQuantityString(
@@ -644,13 +644,9 @@ class StudyOptionsFragment :
                         result.buriedReview,
                         result.buriedReview,
                     )
-                reviewBuryText.isVisible = true
-            } else {
-                reviewBuryText.isVisible = false
             }
-            reviewBuryText.isVisible = result.buriedReview != 0
-            totalNewCardsCount.text = result.totalNewCards.toString()
-            totalCardsCount.text = result.numberOfCardsInDeck.toString()
+            updateTextViewWithCount(totalNewCardsCount, result.totalNewCards)
+            updateTextViewWithCount(totalCardsCount, result.numberOfCardsInDeck)
             // Rebuild the options menu
             configureToolbar()
         }
@@ -659,6 +655,23 @@ class StudyOptionsFragment :
         if (fragmented && refreshDecklist) {
             listener.onRequireDeckListUpdate()
         }
+    }
+
+    /**
+     * Reusable extension function for TextView
+     */
+    private fun TextView.setCountText(count: Int) {
+        text = count.toString()
+    }
+
+    /**
+     * A method to update the TextViews
+     */
+    private fun updateTextViewWithCount(
+        textView: TextView?,
+        count: Int,
+    ) {
+        textView?.setCountText(count)
     }
 
     /**
